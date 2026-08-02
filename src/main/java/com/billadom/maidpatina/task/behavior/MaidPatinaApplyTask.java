@@ -1,5 +1,7 @@
-package com.billadom.maidpatina.task;
+package com.billadom.maidpatina.task.behavior;
 
+import com.billadom.maidpatina.coordination.PatinaCoordinationManager;
+import com.billadom.maidpatina.operation.BlockOperation;
 import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidArriveAtBlockTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;

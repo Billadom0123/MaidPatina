@@ -1,6 +1,7 @@
 package com.billadom.maidpatina.task;
 
 import com.billadom.maidpatina.MaidPatina;
+import com.billadom.maidpatina.operation.BlockOperation;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

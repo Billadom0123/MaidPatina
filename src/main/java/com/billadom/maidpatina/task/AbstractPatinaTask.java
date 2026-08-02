@@ -1,5 +1,9 @@
 package com.billadom.maidpatina.task;
 
+import com.billadom.maidpatina.operation.BlockOperation;
+import com.billadom.maidpatina.task.behavior.MaidPatinaApplyTask;
+import com.billadom.maidpatina.task.behavior.MaidPatinaCoordinationTask;
+import com.billadom.maidpatina.task.behavior.MaidPatinaMoveTask;
 import com.github.tartaricacid.touhoulittlemaid.api.task.FunctionCallSwitchResult;
 import com.github.tartaricacid.touhoulittlemaid.api.task.IMaidTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;

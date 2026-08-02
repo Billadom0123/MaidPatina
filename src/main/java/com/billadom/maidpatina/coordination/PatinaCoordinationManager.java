@@ -1,5 +1,8 @@
-package com.billadom.maidpatina.task;
+package com.billadom.maidpatina.coordination;
 
+import com.billadom.maidpatina.operation.BlockOperation;
+import com.billadom.maidpatina.task.RustRemovalTask;
+import com.billadom.maidpatina.task.WaxingTask;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitEntities;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;

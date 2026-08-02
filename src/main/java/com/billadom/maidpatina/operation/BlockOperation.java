@@ -1,4 +1,4 @@
-package com.billadom.maidpatina.task;
+package com.billadom.maidpatina.operation;
 
 import com.billadom.maidpatina.ModTags;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
