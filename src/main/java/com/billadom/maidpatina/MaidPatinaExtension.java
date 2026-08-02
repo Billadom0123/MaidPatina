@@ -2,6 +2,7 @@ package com.billadom.maidpatina;
 
 import com.billadom.maidpatina.task.RustRemovalTask;
 import com.billadom.maidpatina.task.WaxingTask;
+import com.billadom.maidpatina.task.AdvancedHoneyTask;
 import com.github.tartaricacid.touhoulittlemaid.api.ILittleMaid;
 import com.github.tartaricacid.touhoulittlemaid.api.LittleMaidExtension;
 import com.github.tartaricacid.touhoulittlemaid.entity.task.TaskManager;
@@ -12,5 +13,6 @@ public final class MaidPatinaExtension implements ILittleMaid {
     public void addMaidTask(TaskManager manager) {
         manager.add(new RustRemovalTask());
         manager.add(new WaxingTask());
+        manager.add(new AdvancedHoneyTask());
     }
 }
