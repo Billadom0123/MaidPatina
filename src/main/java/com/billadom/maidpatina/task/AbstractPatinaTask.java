@@ -26,6 +26,7 @@ public abstract class AbstractPatinaTask implements IMaidTask {
     public List<Pair<Integer, BehaviorControl<? super EntityMaid>>> createBrainTasks(EntityMaid maid) {
         // Touhou Little Maid appends its activity-update behavior to this list.
         return new ArrayList<>(List.of(
+                Pair.of(4, new MaidPatinaCoordinationTask(operation)),
                 Pair.of(5, new MaidPatinaMoveTask(operation, 0.6F)),
                 Pair.of(6, new MaidPatinaApplyTask(operation, 2.5D))
         ));

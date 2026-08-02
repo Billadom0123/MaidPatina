@@ -8,7 +8,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
 
 import java.util.Comparator;
 import java.util.Optional;
@@ -21,13 +20,20 @@ public final class MaidPatinaApplyTask extends MaidArriveAtBlockTask {
     }
 
     private static void applyNearest(EntityMaid maid, BlockOperation operation) {
-        ItemStack tool = findTool(maid, operation);
+        ItemStack tool = operation.findTool(maid);
         if (tool.isEmpty()) {
             return;
         }
 
         BlockPos center = maid.blockPosition();
-        findNearestVisibleTarget(maid, operation, center).ifPresent(pos -> operation.apply(maid, pos, tool));
+        findNearestVisibleTarget(maid, operation, center).ifPresent(pos -> {
+            if (operation == BlockOperation.WAXING
+                    && BlockOperation.RUST_REMOVAL.canApply(maid.level(), pos)
+                    && PatinaCoordinationManager.requestRustRemoval(maid, pos)) {
+                return;
+            }
+            operation.apply(maid, pos, tool);
+        });
     }
 
     private static Optional<BlockPos> findNearestVisibleTarget(EntityMaid maid, BlockOperation operation, BlockPos center) {
@@ -36,6 +42,8 @@ public final class MaidPatinaApplyTask extends MaidArriveAtBlockTask {
                         center.offset(INTERACTION_SCAN_RADIUS, INTERACTION_SCAN_RADIUS, INTERACTION_SCAN_RADIUS))
                 .filter(maid::isWithinRestriction)
                 .filter(pos -> operation.canApply(maid.level(), pos))
+                .filter(pos -> operation != BlockOperation.WAXING
+                        || PatinaCoordinationManager.canWaxerTarget(maid, pos))
                 .filter(pos -> isVisible(maid, pos))
                 .map(BlockPos::immutable)
                 .min(Comparator.comparingDouble(pos -> pos.distToCenterSqr(maid.position())));
@@ -48,14 +56,4 @@ public final class MaidPatinaApplyTask extends MaidArriveAtBlockTask {
         return hit.getType() == HitResult.Type.MISS || hit.getBlockPos().equals(pos);
     }
 
-    private static ItemStack findTool(EntityMaid maid, BlockOperation operation) {
-        IItemHandler inventory = maid.getAvailableInv(false);
-        for (int slot = 0; slot < inventory.getSlots(); slot++) {
-            ItemStack stack = inventory.getStackInSlot(slot);
-            if (operation.isTool(stack)) {
-                return stack;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
 }

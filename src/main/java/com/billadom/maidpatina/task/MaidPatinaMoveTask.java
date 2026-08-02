@@ -4,12 +4,10 @@ import com.github.tartaricacid.touhoulittlemaid.entity.ai.brain.task.MaidMoveToB
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.items.IItemHandler;
 
 public final class MaidPatinaMoveTask extends MaidMoveToBlockTask {
     private static final int TARGET_SCAN_RADIUS = 2;
@@ -22,7 +20,7 @@ public final class MaidPatinaMoveTask extends MaidMoveToBlockTask {
 
     @Override
     protected void start(ServerLevel level, EntityMaid maid, long gameTime) {
-        if (!findTool(maid).isEmpty()) {
+        if (!operation.findTool(maid).isEmpty()) {
             searchForDestination(level, maid);
         }
     }
@@ -35,6 +33,8 @@ public final class MaidPatinaMoveTask extends MaidMoveToBlockTask {
                 center.offset(TARGET_SCAN_RADIUS, TARGET_SCAN_RADIUS, TARGET_SCAN_RADIUS))) {
             if (maid.isWithinRestriction(target)
                     && operation.canApply(level, target)
+                    && (operation != BlockOperation.WAXING
+                    || PatinaCoordinationManager.canWaxerTarget(maid, target))
                     && isVisibleFromWorkPosition(level, maid, basePos, target)) {
                 return true;
             }
@@ -50,14 +50,4 @@ public final class MaidPatinaMoveTask extends MaidMoveToBlockTask {
         return hit.getType() == HitResult.Type.MISS || hit.getBlockPos().equals(target);
     }
 
-    private ItemStack findTool(EntityMaid maid) {
-        IItemHandler inventory = maid.getAvailableInv(false);
-        for (int slot = 0; slot < inventory.getSlots(); slot++) {
-            ItemStack stack = inventory.getStackInSlot(slot);
-            if (operation.isTool(stack)) {
-                return stack;
-            }
-        }
-        return ItemStack.EMPTY;
-    }
 }

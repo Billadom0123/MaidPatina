@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.LevelEvent;
 import net.minecraft.world.level.block.WeatheringCopper;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.ToolActions;
+import net.minecraftforge.items.IItemHandler;
 
 import java.util.Optional;
 
@@ -65,6 +66,17 @@ public enum BlockOperation {
 
     public boolean canApply(Level level, BlockPos pos) {
         return result(level.getBlockState(pos)).isPresent();
+    }
+
+    public ItemStack findTool(EntityMaid maid) {
+        IItemHandler inventory = maid.getAvailableInv(false);
+        for (int slot = 0; slot < inventory.getSlots(); slot++) {
+            ItemStack stack = inventory.getStackInSlot(slot);
+            if (isTool(stack)) {
+                return stack;
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     public boolean apply(EntityMaid maid, BlockPos pos, ItemStack tool) {
