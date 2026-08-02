@@ -1,0 +1,8 @@
+{
+  "task.maidpatina.rust_removal": "Rust Removal",
+  "task.maidpatina.rust_removal.desc": "Finds nearby oxidized copper and removes one oxidation stage.",
+  "task.maidpatina.rust_removal.condition.has_rust_removal_tool": "Requires a scraping tool",
+  "task.maidpatina.waxing": "Waxing",
+  "task.maidpatina.waxing.desc": "Finds nearby waxable blocks and applies wax.",
+  "task.maidpatina.waxing.condition.has_waxing_item": "Requires a waxing item"
+}

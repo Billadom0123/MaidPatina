@@ -1,0 +1,8 @@
+{
+  "task.maidpatina.rust_removal": "除锈",
+  "task.maidpatina.rust_removal.desc": "寻找附近的锈蚀铜方块，并移除一层锈蚀。",
+  "task.maidpatina.rust_removal.condition.has_rust_removal_tool": "需要可用于除锈的物品",
+  "task.maidpatina.waxing": "涂蜡",
+  "task.maidpatina.waxing.desc": "寻找附近可涂蜡的方块并为其涂蜡。",
+  "task.maidpatina.waxing.condition.has_waxing_item": "需要可用于涂蜡的物品"
+}
