@@ -20,6 +20,7 @@ import net.minecraftforge.items.IItemHandler;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 
 public final class AdvancedHoneyTask implements IMaidTask {
@@ -51,7 +52,7 @@ public final class AdvancedHoneyTask implements IMaidTask {
     @Override
     public List<Pair<String, Predicate<EntityMaid>>> getConditionDescription(EntityMaid maid) {
         return List.of(
-                Pair.of("has_hive_in_main_hand", AdvancedHoneyTask::hasHiveInMainHand),
+                Pair.of("has_hive", AdvancedHoneyTask::hasHive),
                 Pair.of("has_flower", AdvancedHoneyTask::hasFlower),
                 Pair.of("has_harvest_tool_in_backpack", AdvancedHoneyTask::hasHarvestToolInBackpack)
         );
@@ -71,32 +72,51 @@ public final class AdvancedHoneyTask implements IMaidTask {
 
     @Override
     public String getMaidActionSummary() {
-        return "Use a main-hand hive and an offhand or head-display flower to help a bee pollinate, then produce one honey item";
+        return "Use a flower and a hive in the head-display or either hand to help a bee produce one honey item";
     }
 
     public static boolean hasAllRequirements(EntityMaid maid) {
-        return hasHiveInMainHand(maid)
+        return hasHive(maid)
                 && hasFlower(maid)
                 && hasHarvestToolInBackpack(maid);
     }
 
-    public static boolean hasHiveInMainHand(EntityMaid maid) {
-        ItemStack stack = maid.getMainHandItem();
-        return stack.is(Items.BEEHIVE) || stack.is(Items.BEE_NEST);
+    public static boolean hasHive(EntityMaid maid) {
+        return getHivePosition(maid).isPresent();
     }
 
     public static boolean hasFlower(EntityMaid maid) {
         return getFlower(maid).is(ItemTags.FLOWERS);
     }
 
-    public static boolean hasHeadFlower(EntityMaid maid) {
-        // verified: TLM 1.5.3 EntityMaid#getBackpackShowItem mirrors MaidBackpackHandler.BACKPACK_ITEM_SLOT (slot 5), 2026-08-03
-        return maid.getBackpackShowItem().is(ItemTags.FLOWERS);
+    public static Optional<DisplayPosition> getFlowerPosition(EntityMaid maid) {
+        return findPosition(maid, stack -> stack.is(ItemTags.FLOWERS));
     }
 
     public static ItemStack getFlower(EntityMaid maid) {
-        // The displayed/head flower takes precedence when both positions contain valid flowers.
-        return hasHeadFlower(maid) ? maid.getBackpackShowItem() : maid.getOffhandItem();
+        return getFlowerPosition(maid).map(position -> position.getItem(maid)).orElse(ItemStack.EMPTY);
+    }
+
+    public static Optional<DisplayPosition> getHivePosition(EntityMaid maid) {
+        return findPosition(maid, AdvancedHoneyTask::isHive);
+    }
+
+    public static ItemStack getHive(EntityMaid maid) {
+        return getHivePosition(maid).map(position -> position.getItem(maid)).orElse(ItemStack.EMPTY);
+    }
+
+    private static Optional<DisplayPosition> findPosition(EntityMaid maid, Predicate<ItemStack> predicate) {
+        // Priority requested for both flowers and hives: head display > main hand > offhand.
+        for (DisplayPosition position : DisplayPosition.values()) {
+            if (predicate.test(position.getItem(maid))) {
+                return Optional.of(position);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private static boolean isHive(ItemStack stack) {
+        return stack.is(Items.BEEHIVE) || stack.is(Items.BEE_NEST);
     }
 
     public static boolean hasHarvestToolInBackpack(EntityMaid maid) {
@@ -108,5 +128,30 @@ public final class AdvancedHoneyTask implements IMaidTask {
             }
         }
         return false;
+    }
+
+    public enum DisplayPosition {
+        HEAD {
+            @Override
+            ItemStack getItem(EntityMaid maid) {
+                // verified: TLM 1.5.3 EntityMaid#getBackpackShowItem mirrors
+                // MaidBackpackHandler.BACKPACK_ITEM_SLOT (slot 5), 2026-08-03
+                return maid.getBackpackShowItem();
+            }
+        },
+        MAIN_HAND {
+            @Override
+            ItemStack getItem(EntityMaid maid) {
+                return maid.getMainHandItem();
+            }
+        },
+        OFF_HAND {
+            @Override
+            ItemStack getItem(EntityMaid maid) {
+                return maid.getOffhandItem();
+            }
+        };
+
+        abstract ItemStack getItem(EntityMaid maid);
     }
 }

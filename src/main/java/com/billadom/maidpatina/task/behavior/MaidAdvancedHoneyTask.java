@@ -1,6 +1,7 @@
 package com.billadom.maidpatina.task.behavior;
 
 import com.billadom.maidpatina.task.AdvancedHoneyTask;
+import com.billadom.maidpatina.task.AdvancedHoneyTask.DisplayPosition;
 import com.github.tartaricacid.touhoulittlemaid.entity.passive.EntityMaid;
 import com.github.tartaricacid.touhoulittlemaid.init.InitSounds;
 import com.google.common.collect.ImmutableMap;
@@ -30,11 +31,12 @@ import java.util.UUID;
 
 public final class MaidAdvancedHoneyTask extends Behavior<EntityMaid> {
     private static final double SEARCH_RADIUS = 20.0D;
-    private static final double ARRIVAL_DISTANCE_SQR = 0.45D * 0.45D;
+    private static final double HEAD_ARRIVAL_DISTANCE_SQR = 1.0D * 1.0D;
+    private static final double HAND_ARRIVAL_DISTANCE_SQR = 1.5D * 1.5D;
     private static final double COLLISION_MARGIN = 0.12D;
     private static final int POLLINATION_TICKS = 5 * 20;
     private static final int DEPOSIT_TICKS = 2 * 20;
-    private static final int BEE_COOLDOWN_TICKS = 20 * 20;
+    private static final int BEE_COOLDOWN_TICKS = 5 * 60 * 20;
     private static final int SEARCH_INTERVAL_TICKS = 20;
     private static final int MAX_SESSION_TICKS = 60 * 20;
     private static final double BEE_SPEED = 1.0D;
@@ -82,7 +84,8 @@ public final class MaidAdvancedHoneyTask extends Behavior<EntityMaid> {
         phaseTicks = 0;
         interactionYaw = maid.yBodyRot;
         holdMaidStill(maid);
-        maid.swing(AdvancedHoneyTask.hasHeadFlower(maid) ? InteractionHand.MAIN_HAND : InteractionHand.OFF_HAND);
+        DisplayPosition flowerPosition = AdvancedHoneyTask.getFlowerPosition(maid).orElseThrow();
+        maid.swing(animationHand(flowerPosition));
     }
 
     @Override
@@ -114,11 +117,12 @@ public final class MaidAdvancedHoneyTask extends Behavior<EntityMaid> {
 
     private void tickPollination(EntityMaid maid) {
         holdInteractionFacing(maid);
-        BeeTarget flowerTarget = AdvancedHoneyTask.hasHeadFlower(maid)
-                ? headTarget(maid, bee)
-                : handTarget(maid, bee, InteractionHand.OFF_HAND, interactionYaw);
+        DisplayPosition flowerPosition = AdvancedHoneyTask.getFlowerPosition(maid).orElseThrow();
+        BeeTarget flowerTarget = targetFor(maid, bee, flowerPosition, interactionYaw);
         moveBeeTo(flowerTarget.navigationPoint());
-        if (bee.getBoundingBox().getCenter().distanceToSqr(flowerTarget.interactionPoint()) <= ARRIVAL_DISTANCE_SQR) {
+        double distanceSqr = bee.getBoundingBox().getCenter().distanceToSqr(flowerTarget.interactionPoint());
+        boolean atTarget = distanceSqr <= arrivalDistanceSqr(flowerPosition);
+        if (atTarget) {
             phaseTicks++;
         }
         if (phaseTicks < POLLINATION_TICKS) {
@@ -133,9 +137,12 @@ public final class MaidAdvancedHoneyTask extends Behavior<EntityMaid> {
 
     private void tickDeposit(ServerLevel level, EntityMaid maid, long gameTime) {
         holdInteractionFacing(maid);
-        BeeTarget hiveTarget = handTarget(maid, bee, InteractionHand.MAIN_HAND, interactionYaw);
+        DisplayPosition hivePosition = AdvancedHoneyTask.getHivePosition(maid).orElseThrow();
+        BeeTarget hiveTarget = targetFor(maid, bee, hivePosition, interactionYaw);
         moveBeeTo(hiveTarget.navigationPoint());
-        if (bee.getBoundingBox().getCenter().distanceToSqr(hiveTarget.interactionPoint()) <= ARRIVAL_DISTANCE_SQR) {
+        double distanceSqr = bee.getBoundingBox().getCenter().distanceToSqr(hiveTarget.interactionPoint());
+        boolean atTarget = distanceSqr <= arrivalDistanceSqr(hivePosition);
+        if (atTarget) {
             phaseTicks++;
         }
         if (phaseTicks < DEPOSIT_TICKS) {
@@ -146,7 +153,7 @@ public final class MaidAdvancedHoneyTask extends Behavior<EntityMaid> {
             bee.dropOffNectar();
             bee.setStayOutOfHiveCountdown(40);
             COOLDOWNS.put(bee.getUUID(), gameTime + BEE_COOLDOWN_TICKS);
-            maid.swing(InteractionHand.MAIN_HAND);
+            maid.swing(animationHand(hivePosition));
             // TODO: Replace this placeholder with a dedicated thanks-to-the-bee voice/action.
             maid.playSound(InitSounds.MAID_ITEM_GET.get(), 1.0F, 1.0F);
         }
@@ -193,6 +200,24 @@ public final class MaidAdvancedHoneyTask extends Behavior<EntityMaid> {
     private void moveBeeTo(Vec3 target) {
         bee.getNavigation().moveTo(target.x, target.y, target.z, BEE_SPEED);
         bee.getLookControl().setLookAt(target.x, target.y, target.z, 30.0F, 30.0F);
+    }
+
+    private static BeeTarget targetFor(EntityMaid maid, Bee bee, DisplayPosition position, float bodyYaw) {
+        return switch (position) {
+            case HEAD -> headTarget(maid, bee);
+            case MAIN_HAND -> handTarget(maid, bee, InteractionHand.MAIN_HAND, bodyYaw);
+            case OFF_HAND -> handTarget(maid, bee, InteractionHand.OFF_HAND, bodyYaw);
+        };
+    }
+
+    private static double arrivalDistanceSqr(DisplayPosition position) {
+        return position == DisplayPosition.HEAD
+                ? HEAD_ARRIVAL_DISTANCE_SQR
+                : HAND_ARRIVAL_DISTANCE_SQR;
+    }
+
+    private static InteractionHand animationHand(DisplayPosition position) {
+        return position == DisplayPosition.OFF_HAND ? InteractionHand.OFF_HAND : InteractionHand.MAIN_HAND;
     }
 
     private static BeeTarget handTarget(EntityMaid maid, Bee bee, InteractionHand hand, float bodyYaw) {

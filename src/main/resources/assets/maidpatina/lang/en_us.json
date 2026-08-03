@@ -6,8 +6,8 @@
   "task.maidpatina.waxing.desc": "Finds nearby waxable blocks and applies wax.",
   "task.maidpatina.waxing.condition.has_waxing_item": "Requires a waxing item",
   "task.maidpatina.advanced_honey": "Advanced Honey Gathering",
-  "task.maidpatina.advanced_honey.desc": "Helps a bee gather nectar from an offhand or head-display flower, then deposit it at the main-hand hive.",
-  "task.maidpatina.advanced_honey.condition.has_hive_in_main_hand": "Requires a beehive or bee nest in the main hand",
-  "task.maidpatina.advanced_honey.condition.has_flower": "Requires a bee-accepted flower in the offhand or head-display slot",
+  "task.maidpatina.advanced_honey.desc": "Helps a bee gather nectar from a flower in the head-display slot or either hand, then deposit it at a hive in another position.",
+  "task.maidpatina.advanced_honey.condition.has_hive": "Requires a beehive or bee nest in the head-display slot or either hand",
+  "task.maidpatina.advanced_honey.condition.has_flower": "Requires a bee-accepted flower in the head-display slot or either hand",
   "task.maidpatina.advanced_honey.condition.has_harvest_tool_in_backpack": "Requires shears or a glass bottle in the backpack"
 }

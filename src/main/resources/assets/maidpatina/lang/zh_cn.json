@@ -6,8 +6,8 @@
   "task.maidpatina.waxing.desc": "寻找附近可涂蜡的方块并为其涂蜡。",
   "task.maidpatina.waxing.condition.has_waxing_item": "需要可用于涂蜡的物品",
   "task.maidpatina.advanced_honey": "高级采蜜",
-  "task.maidpatina.advanced_honey.desc": "用副手或头饰位的花朵帮助蜜蜂采蜜，再让蜜蜂向主手的蜂巢产蜜。",
-  "task.maidpatina.advanced_honey.condition.has_hive_in_main_hand": "主手需要蜂巢或蜂箱",
-  "task.maidpatina.advanced_honey.condition.has_flower": "副手或头饰位需要蜜蜂接受的花朵",
+  "task.maidpatina.advanced_honey.desc": "用头饰位、主手或副手中的花朵帮助蜜蜂采蜜，再让蜜蜂向另一位置的蜂巢产蜜。",
+  "task.maidpatina.advanced_honey.condition.has_hive": "头饰位、主手或副手需要蜂巢或蜂箱",
+  "task.maidpatina.advanced_honey.condition.has_flower": "头饰位、主手或副手需要蜜蜂接受的花朵",
   "task.maidpatina.advanced_honey.condition.has_harvest_tool_in_backpack": "背包需要剪刀或玻璃瓶"
 }
