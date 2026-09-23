@@ -19,6 +19,8 @@ hs_err_pid*
 
 # Common working directory
 run
+# Data generation working directory (see the data run config in build.gradle)
+run-data
 
 # Vibe Coding
 AGENT.md

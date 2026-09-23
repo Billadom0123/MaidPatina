@@ -153,6 +153,14 @@ dependencies {
     compileOnly fg.deobf("maven.modrinth:touhou-little-maid:${touhou_little_maid_version}")
     runtimeOnly fg.deobf("maven.modrinth:touhou-little-maid:${touhou_little_maid_version}")
 
+    // Compatibility testing for local dev runs. Create supplies the sand paper items listed in
+    // maidpatina:rust_removal_tools and injects its copper blocks into HoneycombItem.WAXABLES;
+    // Create: Patina adds further oxidized copper variants and oxidizing mechanisms to test against.
+    // Runtime only: MaidPatina compiles against neither mod, and neither is a hard dependency.
+    // Both release jars bundle their own libraries (Flywheel, Ponder, Registrate) as jar-in-jar.
+    runtimeOnly fg.deobf("maven.modrinth:create:${create_version}")
+    runtimeOnly fg.deobf("maven.modrinth:create-patina:${create_patina_version}")
+
     // Example mod dependency with JEI - using fg.deobf() ensures the dependency is remapped to your development mappings
     // The JEI API is declared for compile time use, while the full JEI artifact is used at runtime
     // compileOnly fg.deobf("mezz.jei:jei-${mc_version}-common-api:${jei_version}")

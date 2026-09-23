@@ -24,6 +24,7 @@ MaidPatina adds no blocks, items or entities of its own. Everything it does is i
 * **Tool:** any item in the `maidpatina:rust_removal_tools` item tag, or any item that can perform the Forge `AXE_SCRAPE` tool action (so vanilla axes work out of the box).
 * **Behaviour:** while working, the maid scans a 3 block cube around herself, keeps only blocks that are inside her work range, that are reachable by line of sight, and that have a previous oxidation stage (`WeatheringCopper#getPrevious`), walks to the closest one, and scrapes **one oxidation stage** off it.
 * Plays the vanilla axe-scrape sound and scrape particles, swings her arm, and consumes one durability from the tool (one whole item if the tool is not damageable).
+* **Mod compatibility:** detection uses the vanilla weathering table. Create and Create: Patina fold their copper machine families (fluid pipes, tanks, valve handles, ...) into that table during mod construction, so their oxidized blocks are scraped too; the block entity survives the state swap, so machine data (pipe fluid, tank contents) is kept. On Create: Patina fluid tanks the whole multiblock is converted in one step when its "weather whole tank with tools" config is enabled.
 
 ### Waxing - `maidpatina:waxing`
 
@@ -31,7 +32,7 @@ MaidPatina adds no blocks, items or entities of its own. Everything it does is i
 
 * **Tool:** `minecraft:honeycomb`, or any item in the `maidpatina:waxing_items` item tag.
 * **Behaviour:** the same scan, walk and apply loop as Rust Removal, but for blocks registered in vanilla `HoneycombItem.WAXABLES`.
-* **Mod compatibility:** 1.20.1 Create injects its own copper blocks into that vanilla map during common setup, so Create's copper also gets waxed. Same applies to any other mod that does the same.
+* **Mod compatibility:** 1.20.1 Create injects its own copper blocks into that vanilla map during common setup, so Create's copper also gets waxed; Create: Patina feeds every weathered machine family through the same hook, so its blocks are covered as well (whole fluid tank in one step when its config is on). Same applies to any other mod that does the same.
 * Plays the vanilla wax-on sound and particle, and consumes one item.
 
 ### Advanced Honey Gathering - `maidpatina:advanced_honey`
